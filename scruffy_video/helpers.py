@@ -64,7 +64,6 @@ def call_api(link):
         return False
 
     api_link = API_FORMATS[kind].format(the_id)
-
     resp = requests.get(api_link)
     resp.raise_for_status()
     return json.loads(resp.content)
