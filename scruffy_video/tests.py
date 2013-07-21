@@ -12,6 +12,7 @@ TEST_YOUTUBE_URL_3 = "http://www.youtu.be/SicQi0H925g"
 
 
 def test_get_video_type():
+    """ YouTube and Vimeo links should return their respective types. """
     for link in [TEST_YOUTUBE_URL_1, TEST_YOUTUBE_URL_2, TEST_YOUTUBE_URL_3]:
         assert get_video_type(link) == 'youtube'
     assert get_video_type(TEST_VIMEO_URL) == 'vimeo'
@@ -23,31 +24,37 @@ def test_get_video_type_and_id():
 
 
 def test_youtube_id():
+    """ Should return the video's ID regardless of the link's format. """
     for link in [TEST_YOUTUBE_URL_1, TEST_YOUTUBE_URL_2, TEST_YOUTUBE_URL_3]:
         assert youtube_id(link) == 'SicQi0H925g'
 
 
 def test_vimeo_id():
+    """ Should return the video's id """
     assert vimeo_id(TEST_VIMEO_URL) == '22733150'
 
 
 def test_get_embed_src():
+    """ Should return a url we can stick in an iframe src to create a player. """
     assert get_embed_src(TEST_VIMEO_URL) == "http://player.vimeo.com/video/22733150"
     assert get_embed_src(TEST_YOUTUBE_URL_1) == "http://www.youtube.com/embed/SicQi0H925g"
 
 
 @mock.patch.object(requests, 'get')
 def test_call_api(mock_get):
+    """ Should call the right API and return parsed json. """
     resp = mock.MagicMock()
     resp.raise_for_status.return_value = None
     resp.content = u"""{"thats":"a wrap"}"""
     mock_get.return_value = resp
     content = call_api(TEST_VIMEO_URL)
+    assert mock_get.call_args[0][0] == 'http://vimeo.com/api/v2/video/22733150.json'
     assert content == {'thats': 'a wrap'}
 
 
 @mock.patch.object(helpers, 'call_api')
 def test_get_image_url_for_vimeo(mock_api):
+    """ Should return the url of the main thumbnail found in the api call. """
     mock_api.return_value = [{
         'thumbnail_large': 'http://b.vimeocdn.com/ts/147/229/147229620_640.jpg',
     }]
@@ -58,6 +65,7 @@ def test_get_image_url_for_vimeo(mock_api):
 
 @mock.patch.object(helpers, 'call_api')
 def test_get_image_url_for_youtube(mock_api):
+    """ Should return the url of the main thumbnail found in the api call. """
     mock_api.return_value = {'encoding': 'UTF-8',
                              'entry': {
                                'media$group': {
