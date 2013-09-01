@@ -1,5 +1,9 @@
 import requests
-import simplejson as json
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 def get_video_type(link):
     """ Takes a url and decides if it's Vimeo or YouTube.
