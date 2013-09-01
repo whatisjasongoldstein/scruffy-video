@@ -49,9 +49,9 @@ def get_embed_src(link):
     """ Gets the source for an iframe to embed. """
     origin = get_video_type(link)
     if origin == 'vimeo':
-        return "http://player.vimeo.com/video/%s" % vimeo_id(link)
+        return "//player.vimeo.com/video/%s" % vimeo_id(link)
     elif origin == 'youtube':
-        return "http://www.youtube.com/embed/%s" % youtube_id(link)
+        return "//www.youtube.com/embed/%s" % youtube_id(link)
     else:
         return False
 
