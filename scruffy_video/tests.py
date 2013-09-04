@@ -36,8 +36,8 @@ def test_vimeo_id():
 
 def test_get_embed_src():
     """ Should return a url we can stick in an iframe src to create a player. """
-    assert get_embed_src(TEST_VIMEO_URL) == "http://player.vimeo.com/video/22733150"
-    assert get_embed_src(TEST_YOUTUBE_URL_1) == "http://www.youtube.com/embed/SicQi0H925g"
+    assert get_embed_src(TEST_VIMEO_URL) == "//player.vimeo.com/video/22733150"
+    assert get_embed_src(TEST_YOUTUBE_URL_1) == "//www.youtube.com/embed/SicQi0H925g"
 
 
 @mock.patch.object(requests, 'get')
