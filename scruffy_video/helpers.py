@@ -56,32 +56,38 @@ def get_embed_src(link):
         return False
 
 
-def call_api(link):
+def call_api(link, keys=None):
     """ Get the API contents back. """
+    keys = keys or {}
 
     API_FORMATS = {
-        'vimeo': "http://vimeo.com/api/v2/video/{}.json",
-        'youtube': "http://gdata.youtube.com/feeds/api/videos/{}?alt=json",
+        'vimeo': "http://vimeo.com/api/v2/video/{id}.json",
+        'youtube': "https://www.googleapis.com/youtube/v3/videos?id={id}&key={key}&part=snippet,contentDetails,statistics,status"
     }
     kind, the_id = get_video_type_and_id(link)
+
+    if kind in ["youtube",] and not keys.get(kind, False):
+        raise Exception("An API key is required for {}".format(kind))
+
     if not kind or not the_id:
         return False
-
-    api_link = API_FORMATS[kind].format(the_id)
-    resp = requests.get(api_link)
+    api_link = API_FORMATS[kind].format(id=the_id, key=keys.get(kind, None))
+    resp = requests.get(api_link, timeout=5)
     resp.raise_for_status()
     return json.loads(resp.content)
 
 
-def get_image_url(link):
+def get_image_url(link, keys=None):
     """ Returns a url for the video's cover image. """
-    data = call_api(link)
+    keys = keys or {}
+
+    data = call_api(link, keys=keys)
     video_type = get_video_type(link)
 
     if video_type == 'vimeo':
         image_link = data[0]['thumbnail_large']
     elif video_type == 'youtube':
-        image_link = data['entry']['media$group']['media$thumbnail'][0]['url']
+        image_link = data['items'][0]['snippet']['thumbnails']['maxres']['url']
     else:
         raise ValueError('{} is not supported.'.format(video_type))
     return image_link
