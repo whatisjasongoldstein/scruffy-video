@@ -77,17 +77,15 @@ def call_api(link, keys=None):
     return json.loads(resp.content)
 
 
-def get_image_url(link, keys=None):
+def get_image_url(link):
     """ Returns a url for the video's cover image. """
-    keys = keys or {}
-
-    data = call_api(link, keys=keys)
     video_type = get_video_type(link)
-
+    
     if video_type == 'vimeo':
+        data = call_api(link)
         image_link = data[0]['thumbnail_large']
     elif video_type == 'youtube':
-        image_link = data['items'][0]['snippet']['thumbnails']['maxres']['url']
+        image_link = "http://img.youtube.com/vi/{}/maxresdefault.jpg".format(youtube_id(link))
     else:
         raise ValueError('{} is not supported.'.format(video_type))
     return image_link
